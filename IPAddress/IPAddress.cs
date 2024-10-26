@@ -18,8 +18,12 @@ public class IPv4Address {
         else {
             address = ValidateStringAddress(arr[0]);
             cidr = ValidateCIDR(int.Parse(arr[1])); // this could fail too.
-            address_as_int = AddressToInt(address);
+            address_as_int = AddressToUint(address);
         }
+    }
+
+    public IPv4Address(int address_as_int, int cidr) {
+        // todo
     }
 
     public string GetAddress() {
@@ -42,11 +46,18 @@ public class IPv4Address {
         return Exploded(address);
     }
 
+    public IPv4Address GetNetworkAddress() {
+        // address AND subnet mask
+       uint subnet_mask_as_int = AddressToUint(CIDRToSubnetMask());
+       uint result = address_as_int & subnet_mask_as_int;
+       return null;
+    }
+
     private static string[] Exploded(string address) {
         return address.Split('.');
     }
 
-    private uint AddressToInt(string address) {
+    private uint AddressToUint(string address) {
         string[] exploded = Exploded();
 
         return (uint.Parse(exploded[0]) << 24) + (uint.Parse(exploded[1]) << 16) + (uint.Parse(exploded[2]) << 8) + uint.Parse(exploded[3]);
