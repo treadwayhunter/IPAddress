@@ -1,5 +1,3 @@
-using System.Xml.XPath;
-
 namespace IPAddress;
 public class IPv4Address {
     private readonly string address;
@@ -74,6 +72,19 @@ public class IPv4Address {
         uint subnet_mask_as_int = AddressToUint(subnet_mask);
 
         uint result = address_as_int & subnet_mask_as_int; 
+
+        if (result == address_as_int) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool IsBroadcastAddress() {
+        string wildcard_mask = CIDRToWildcardMask();
+        uint wildcard_mask_as_int = AddressToUint(wildcard_mask);
+
+        uint result = address_as_int | wildcard_mask_as_int;
 
         if (result == address_as_int) {
             return true;

@@ -46,4 +46,11 @@ public class UnitTest1
 
         Assert.Equal(broadcast, address.GetBroadcastAddress().GetAddress());
     }
+
+    [Fact]
+    public void TestIsBroadcastAddress() {
+        IPv4Address address = new("192.168.10.255/24");
+
+        Assert.True(address.IsBroadcastAddress());
+    }
 }
