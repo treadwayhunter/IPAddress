@@ -1,3 +1,5 @@
+using System.Xml.XPath;
+
 namespace IPAddress;
 public class IPv4Address {
     private readonly string address;
@@ -22,8 +24,11 @@ public class IPv4Address {
         }
     }
 
-    public IPv4Address(int address_as_int, int cidr) {
+    public IPv4Address(uint address_as_int, int cidr) {
         // todo
+        this.address_as_int = address_as_int;
+        this.cidr = ValidateCIDR(cidr);
+        address = UintToAddress(this.address_as_int);
     }
 
     public string GetAddress() {
@@ -47,20 +52,53 @@ public class IPv4Address {
     }
 
     public IPv4Address GetNetworkAddress() {
-        // address AND subnet mask
-       uint subnet_mask_as_int = AddressToUint(CIDRToSubnetMask());
-       uint result = address_as_int & subnet_mask_as_int;
-       return null;
+        string subnet_mask = CIDRToSubnetMask();
+        uint subnet_mask_as_int = AddressToUint(subnet_mask);
+
+        uint result = address_as_int & subnet_mask_as_int;
+
+        return new IPv4Address(result, cidr);
+    }
+
+    public IPv4Address GetBroadcastAddress() {
+        string wildcard_mask = CIDRToWildcardMask();
+        uint wildcard_mask_as_int = AddressToUint(wildcard_mask);
+
+        uint result = address_as_int | wildcard_mask_as_int;
+
+        return new IPv4Address(result, cidr);
+    }
+
+    public bool IsNetworkAddress() {
+        string subnet_mask = CIDRToSubnetMask();
+        uint subnet_mask_as_int = AddressToUint(subnet_mask);
+
+        uint result = address_as_int & subnet_mask_as_int; 
+
+        if (result == address_as_int) {
+            return true;
+        }
+
+        return false;
     }
 
     private static string[] Exploded(string address) {
         return address.Split('.');
     }
 
-    private uint AddressToUint(string address) {
-        string[] exploded = Exploded();
+    private static uint AddressToUint(string address) {
+        string[] exploded = Exploded(address); // use the private one, oops
 
         return (uint.Parse(exploded[0]) << 24) + (uint.Parse(exploded[1]) << 16) + (uint.Parse(exploded[2]) << 8) + uint.Parse(exploded[3]);
+    }
+
+    private static string UintToAddress(uint address_as_int) {
+        uint octet1 = (address_as_int >> 24) & 0xFF;
+        uint octet2 = (address_as_int >> 16) & 0xFF;
+        uint octet3 = (address_as_int >> 8) & 0xFF;
+        uint octet4 = address_as_int & 0xFF;
+
+        return $"{octet1}.{octet2}.{octet3}.{octet4}";
     }
 
     private static string ValidateStringAddress(string address) {
@@ -122,6 +160,46 @@ public class IPv4Address {
             31 => "255.255.255.254",
             32 => "255.255.255.255",
             _ => "0.0.0.0",
+        };
+    }
+
+    private string CIDRToWildcardMask() {
+        return cidr switch
+        {
+            0 => "255.255.255.255",
+            1 => "127.255.255.255",
+            2 => "63.255.255.255",
+            3 => "31.255.255.255",
+            4 => "15.255.255.255",
+            5 => "7.255.255.255",
+            6 => "3.255.255.255",
+            7 => "1.255.255.255",
+            8 => "0.255.255.255",
+            9 => "0.127.255.255",
+            10 => "0.63.255.255",
+            11 => "0.31.255.255",
+            12 => "0.15.255.255",
+            13 => "0.7.255.255",
+            14 => "0.3.255.255",
+            15 => "0.1.255.255",
+            16 => "0.0.255.255",
+            17 => "0.0.127.255",
+            18 => "0.0.63.255",
+            19 => "0.0.31.255",
+            20 => "0.0.15.255",
+            21 => "0.0.7.255",
+            22 => "0.0.3.255",
+            23 => "0.0.1.255",
+            24 => "0.0.0.255",
+            25 => "0.0.0.127",
+            26 => "0.0.0.63",
+            27 => "0.0.0.31",
+            28 => "0.0.0.15",
+            29 => "0.0.0.7",
+            30 => "0.0.0.3",
+            31 => "0.0.0.1",
+            32 => "0.0.0.0",
+            _ => "255.255.255.255",
         };
     }
 }

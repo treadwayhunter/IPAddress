@@ -12,3 +12,4 @@ C:\Users\Hunter\Desktop\csharp\IPAddress\IPAddress\obj\Debug\net8.0\refint\IPAdd
 C:\Users\Hunter\Desktop\csharp\IPAddress\IPAddress\obj\Debug\net8.0\IPAddress.pdb
 C:\Users\Hunter\Desktop\csharp\IPAddress\IPAddress\obj\Debug\net8.0\IPAddress.genruntimeconfig.cache
 C:\Users\Hunter\Desktop\csharp\IPAddress\IPAddress\obj\Debug\net8.0\ref\IPAddress.dll
+C:\Users\Hunter\Desktop\csharp\IPAddress\IPAddress\obj\Debug\net8.0\IPAddress.sourcelink.json
